@@ -17,9 +17,12 @@ const SYSTEM_PROMPT = `You are a senior technical editor writing a weekly newsle
 
 Rules:
 - ONLY include topics relevant to the audience. Silently DROP anything off-topic (e.g. SAP HR/SuccessFactors UX tips, generic finance/basis content, marketing posts) that does not help a fullstack SAP developer.
+- Focus on what is NOTEWORTHY. Silently SKIP low-signal noise: dependency bumps (e.g. "update dependency X to vY"), version-bump-only releases, small bug fixes, typo fixes, minor refactors, formatting/lint/CI/test-only changes, README tweaks, and "chore" commits. Do NOT list these.
+- For each repo, only call out genuinely meaningful work: new features, new plugins/tools, breaking changes, major version releases, architecture changes, or new capabilities. If a repo only had trivial changes this week, OMIT it entirely rather than padding the article.
+- If, after filtering, an entire section has nothing noteworthy, drop the whole section. Quality over quantity — a shorter, high-signal article is better than a long one full of minor changes.
 - Be concrete and technical. Reference the actual blog posts and repositories provided. Always keep their URLs as markdown links.
 - Group content into clear sections (e.g. "SAP Community Highlights", "ABAP Open Source", "UI5 Ecosystem").
-- Summarize what changed/why it matters; for repos, mention notable commits/features.
+- Summarize what changed/why it matters; for repos, mention notable commits/features only.
 - Never invent facts, repos, links, or commits. Only use what is in the provided digest.
 - Write in an engaging but professional tone. Use markdown (##, ###, bullet lists, bold).
 - Output language: English.`;
@@ -59,6 +62,7 @@ ${digest}`;
     const res = await openai.chat.completions.create({
         model: config.openai.textModel,
         temperature: 0.6,
+        max_tokens: 8000,
         response_format: { type: "json_object" },
         messages: [
             { role: "system", content: SYSTEM_PROMPT },
@@ -66,9 +70,14 @@ ${digest}`;
         ],
     });
 
-    const json = parseJson<ArticleJson>(
-        res.choices[0]?.message?.content ?? "{}",
-    );
+    const choice = res.choices[0];
+    if (choice?.finish_reason === "length") {
+        log.warn(
+            "Article response hit the token limit and may be truncated; consider raising OPENAI max_tokens.",
+        );
+    }
+
+    const json = parseJson<ArticleJson>(choice?.message?.content ?? "{}");
     const title = json.title?.trim() || `SAP Dev Weekly – ${range.label}`;
 
     log.ok(`Article generated: "${title}"`);
@@ -115,13 +124,80 @@ Write the LinkedIn post. Include the URL near the call to action.`,
 }
 
 function parseJson<T>(raw: string): T {
+    const text = raw.trim();
+
+    // 1. Happy path.
     try {
-        return JSON.parse(raw) as T;
+        return JSON.parse(text) as T;
     } catch {
-        const match = raw.match(/\{[\s\S]*\}/);
-        if (match) return JSON.parse(match[0]) as T;
-        throw new Error("AI did not return valid JSON");
+        // continue
     }
+
+    // 2. Strip ```json fences and try the largest {...} block.
+    const unfenced = text
+        .replace(/^```(?:json)?/i, "")
+        .replace(/```$/i, "")
+        .trim();
+    const match = unfenced.match(/\{[\s\S]*\}/);
+    if (match) {
+        try {
+            return JSON.parse(match[0]) as T;
+        } catch {
+            // continue
+        }
+    }
+
+    // 3. Last resort: try to repair a truncated JSON object (e.g. the model
+    //    was cut off mid-string). Close an open string and any open braces.
+    const repaired = repairTruncatedJson(match ? match[0] : unfenced);
+    if (repaired) {
+        try {
+            return JSON.parse(repaired) as T;
+        } catch {
+            // continue
+        }
+    }
+
+    log.warn(
+        `AI returned unparseable JSON (first 200 chars): ${text.slice(0, 200)}`,
+    );
+    throw new Error("AI did not return valid JSON");
+}
+
+/**
+ * Best-effort repair of JSON that was cut off mid-output: terminate an
+ * unterminated string and balance braces/brackets so JSON.parse can succeed.
+ */
+function repairTruncatedJson(s: string): string | null {
+    if (!s) return null;
+    let inString = false;
+    let escaped = false;
+    const stack: string[] = [];
+
+    for (const ch of s) {
+        if (escaped) {
+            escaped = false;
+            continue;
+        }
+        if (ch === "\\") {
+            if (inString) escaped = true;
+            continue;
+        }
+        if (ch === '"') {
+            inString = !inString;
+            continue;
+        }
+        if (inString) continue;
+        if (ch === "{" || ch === "[") stack.push(ch);
+        else if (ch === "}" || ch === "]") stack.pop();
+    }
+
+    let out = s;
+    if (inString) out += '"';
+    while (stack.length) {
+        out += stack.pop() === "{" ? "}" : "]";
+    }
+    return out === s && !inString ? null : out;
 }
 
 function slugify(s: string): string {

@@ -11,7 +11,6 @@ interface DotabapRepo {
     pushed_at: string;
     updated_at: string;
     stargazers_count: number;
-    topics?: string[];
 }
 
 interface DotabapEntry {
@@ -40,7 +39,6 @@ export async function collectDotabap(range: DateRange): Promise<RawItem[]> {
             url: repo.html_url,
             publishedAt: pushedAt,
             summary: repo.description ?? undefined,
-            tags: repo.topics ?? [],
             repo: repo.full_name,
         });
     }

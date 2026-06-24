@@ -71,8 +71,9 @@ cp .env.example .env
 |---|---|---|
 | `OPENAI_API_KEY` | ✅ | Your OpenAI-compatible API key |
 | `OPENAI_BASE_URL` | – | Endpoint (default `https://api.openai.com/v1`) |
-| `OPENAI_TEXT_MODEL` | – | Text model (default `gpt-4o`) |
-| `OPENAI_IMAGE_MODEL` | – | Image model (default `gpt-image-1`) |
+| `OPENAI_TEXT_MODEL` | – | Text model (default `gpt-4o`; best: `gpt-5.5-pro`) |
+| `OPENAI_IMAGE_MODEL` | – | Image model (default `gpt-image-1`; best EU-safe: `vertex-imagen-4-ultra`) |
+| `OPENAI_IMAGE_ENABLED` | – | `false` skips image gen and uses a branded placeholder |
 | `GITHUB_TOKEN` | ✅ | For GitHub API (commits/READMEs). In Actions it's built-in |
 | `LINKEDIN_ACCESS_TOKEN` | – | OAuth token with `w_member_social` scope |
 | `LINKEDIN_AUTHOR_URN` | – | `urn:li:person:xxx` or `urn:li:organization:xxx` |
@@ -80,6 +81,11 @@ cp .env.example .env
 
 > Without LinkedIn credentials (or with `--dry-run`), the LinkedIn post is
 > saved as a draft file instead of being published.
+
+> **Model note:** some endpoints geo-restrict `gpt-image-1` / `dall-e-3`
+> (EU project geography). `vertex-imagen-4-ultra` works and accepts the
+> `1536x1024` size this app uses. If image generation fails for any reason,
+> the pipeline automatically falls back to a branded placeholder.
 
 ---
 

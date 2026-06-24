@@ -1,6 +1,7 @@
 import { config } from "../config.js";
-import type { CommitInfo, DateRange } from "../types.js";
+import type { DateRange } from "../types.js";
 import { fetchJson, fetchWithRetry } from "../util/http.js";
+import { isWithin } from "../util/dates.js";
 import { log } from "../util/log.js";
 
 const API = "https://api.github.com";
@@ -16,19 +17,16 @@ function ghHeaders(): Record<string, string> {
 }
 
 interface GhCommit {
-    sha: string;
-    html_url: string;
     commit: {
         message: string;
-        author: { name?: string; date?: string };
     };
 }
 
-/** Fetch commits for a repo within the date range. */
+/** Fetch commit messages for a repo within the date range. */
 export async function fetchCommits(
     repo: string,
     range: DateRange,
-): Promise<CommitInfo[]> {
+): Promise<string[]> {
     const url =
         `${API}/repos/${repo}/commits` +
         `?since=${encodeURIComponent(range.start)}&until=${encodeURIComponent(range.end)}&per_page=30`;
@@ -36,13 +34,9 @@ export async function fetchCommits(
         const commits = await fetchJson<GhCommit[]>(url, {
             headers: ghHeaders(),
         });
-        return commits.map((c) => ({
-            sha: c.sha.slice(0, 7),
-            message: c.commit.message.split("\n")[0].slice(0, 200),
-            author: c.commit.author?.name ?? "unknown",
-            date: c.commit.author?.date ?? "",
-            url: c.html_url,
-        }));
+        return commits.map((c) =>
+            c.commit.message.split("\n")[0].slice(0, 200),
+        );
     } catch (err) {
         log.warn(
             `Could not fetch commits for ${repo}: ${(err as Error).message}`,
@@ -52,25 +46,57 @@ export async function fetchCommits(
 }
 
 interface GhRepo {
-    stargazers_count: number;
     default_branch: string;
 }
 
-/** Fetch star count + README excerpt for a repo. */
+interface GhRelease {
+    name?: string;
+    tag_name?: string;
+    published_at?: string;
+    draft?: boolean;
+    prerelease?: boolean;
+}
+
+/** Fetch README excerpt for a repo. */
 export async function fetchRepoMeta(
     repo: string,
-): Promise<{ stars?: number; readme?: string }> {
+): Promise<{ readme?: string }> {
     try {
-        const meta = await fetchJson<GhRepo>(`${API}/repos/${repo}`, {
+        await fetchJson<GhRepo>(`${API}/repos/${repo}`, {
             headers: ghHeaders(),
         });
         const readme = await fetchReadme(repo);
-        return { stars: meta.stargazers_count, readme };
+        return { readme };
     } catch (err) {
         log.warn(
             `Could not fetch repo meta for ${repo}: ${(err as Error).message}`,
         );
         return {};
+    }
+}
+
+/** Fetch release names/tags published within the date range. */
+export async function fetchReleases(
+    repo: string,
+    range: DateRange,
+): Promise<string[]> {
+    const url = `${API}/repos/${repo}/releases?per_page=30`;
+    try {
+        const releases = await fetchJson<GhRelease[]>(url, {
+            headers: ghHeaders(),
+        });
+        return releases
+            .filter((r) => !r.draft && r.published_at)
+            .filter((r) =>
+                isWithin(new Date(r.published_at!).toISOString(), range),
+            )
+            .map((r) => r.name?.trim() || r.tag_name || "")
+            .filter((name): name is string => Boolean(name));
+    } catch (err) {
+        log.warn(
+            `Could not fetch releases for ${repo}: ${(err as Error).message}`,
+        );
+        return [];
     }
 }
 

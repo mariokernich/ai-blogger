@@ -9,6 +9,8 @@ export function getOpenAI(): OpenAI {
         client = new OpenAI({
             apiKey: config.openai.apiKey,
             baseURL: config.openai.baseUrl,
+            timeout: config.openai.timeoutMs,
+            maxRetries: config.openai.maxRetries,
         });
     }
     return client;

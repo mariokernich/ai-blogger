@@ -4,7 +4,7 @@ import { fetchJson } from "../util/http.js";
 import { isWithin } from "../util/dates.js";
 import { log } from "../util/log.js";
 
-interface BestOfUi5Package {
+interface BestOfCapPackage {
     name: string;
     description?: string;
     gitHubOwner?: string;
@@ -13,16 +13,16 @@ interface BestOfUi5Package {
     updatedAt?: string;
 }
 
-interface BestOfUi5Data {
-    packages: BestOfUi5Package[];
+interface BestOfCapData {
+    packages: BestOfCapPackage[];
 }
 
 /**
- * Collects UI5 community projects from bestofui5 that were updated in the week.
+ * Collects CAP community projects from bestofcapjs that were updated in the week.
  */
-export async function collectBestOfUi5(range: DateRange): Promise<RawItem[]> {
-    log.step("Collecting bestofui5 UI5 projects");
-    const data = await fetchJson<BestOfUi5Data>(config.sources.bestOfUi5);
+export async function collectBestOfCap(range: DateRange): Promise<RawItem[]> {
+    log.step("Collecting bestofcap CAP projects");
+    const data = await fetchJson<BestOfCapData>(config.sources.bestOfCap);
 
     const items: RawItem[] = [];
     for (const pkg of data.packages ?? []) {
@@ -36,7 +36,7 @@ export async function collectBestOfUi5(range: DateRange): Promise<RawItem[]> {
                 : undefined;
 
         items.push({
-            source: "bestofui5",
+            source: "bestofcap",
             title: pkg.name,
             url: pkg.githublink ?? (repo ? `https://github.com/${repo}` : ""),
             publishedAt: updatedAt,
@@ -45,6 +45,6 @@ export async function collectBestOfUi5(range: DateRange): Promise<RawItem[]> {
         });
     }
 
-    log.ok(`bestofui5: ${items.length} packages updated in week`);
+    log.ok(`bestofcap: ${items.length} packages updated in week`);
     return items;
 }

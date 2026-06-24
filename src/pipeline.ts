@@ -8,6 +8,9 @@ import { log } from "./util/log.js";
 import { collectSapCommunity } from "./sources/sapCommunity.js";
 import { collectDotabap } from "./sources/dotabap.js";
 import { collectBestOfUi5 } from "./sources/bestOfUi5.js";
+import { collectBestOfCap } from "./sources/bestOfCap.js";
+import { collectMarianZeis } from "./sources/marianZeis.js";
+import { collectItsFullOfStars } from "./sources/itsFullOfStars.js";
 import { filterRelevant } from "./enrich/filter.js";
 import { enrichItems } from "./enrich/index.js";
 
@@ -26,6 +29,9 @@ export async function collect(range: DateRange): Promise<RawItem[]> {
         collectSapCommunity(range),
         collectDotabap(range),
         collectBestOfUi5(range),
+        collectBestOfCap(range),
+        collectMarianZeis(range),
+        collectItsFullOfStars(range),
     ]);
 
     const items: RawItem[] = [];
