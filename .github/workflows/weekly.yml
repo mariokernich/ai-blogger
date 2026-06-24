@@ -1,0 +1,102 @@
+name: Weekly SAP AI Blog
+
+on:
+  # GitHub Actions cron is UTC. Germany is UTC+1 (CET) or UTC+2 (CEST).
+  # We schedule both 06:00 and 07:00 UTC and gate below so it runs exactly
+  # once at 08:00 Europe/Berlin every Monday.
+  schedule:
+    - cron: "0 6 * * 1"
+    - cron: "0 7 * * 1"
+  # Allow manual triggering for testing.
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Skip LinkedIn publishing (draft only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-blog
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      proceed: ${{ steps.check.outputs.proceed }}
+    steps:
+      - id: check
+        name: Only proceed at 08:00 Europe/Berlin
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger – proceeding."
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          HOUR=$(TZ="Europe/Berlin" date +%H)
+          echo "Current Berlin hour: $HOUR"
+          if [ "$HOUR" = "08" ]; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Not 08:00 Berlin – skipping this scheduled run."
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  generate:
+    needs: gate
+    if: needs.gate.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with submodules for PaperMod)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run pipeline (collect → AI → publish blog + LinkedIn)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          OPENAI_TEXT_MODEL: ${{ vars.OPENAI_TEXT_MODEL }}
+          OPENAI_IMAGE_MODEL: ${{ vars.OPENAI_IMAGE_MODEL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_AUTHOR_URN: ${{ secrets.LINKEDIN_AUTHOR_URN }}
+          BLOG_BASE_URL: ${{ vars.BLOG_BASE_URL }}
+        run: |
+          ARGS=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="--dry-run"; fi
+          npm run run -- $ARGS
+
+      - name: Commit generated post
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add blog/content/posts
+          if git diff --cached --quiet; then
+            echo "No new post to commit."
+          else
+            WEEK=$(TZ="Europe/Berlin" date +%G-W%V)
+            git commit -m "chore(blog): weekly post $WEEK [skip ci]"
+            git push
+          fi
+
+      - name: Upload run artifacts (data + thumbnails + linkedin draft)
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-run
+          path: data/runs/
+          if-no-files-found: ignore
+          retention-days: 30

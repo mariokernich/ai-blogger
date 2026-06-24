@@ -1,0 +1,85 @@
+baseURL = "https://your-username.github.io/sap-ai-news/"
+languageCode = "en-us"
+title = "SAP Dev Weekly"
+theme = "PaperMod"
+
+enableInlineShortcodes = true
+enableRobotsTXT = true
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+pygmentsUseClasses = true
+
+[pagination]
+  pagerSize = 10
+
+[minify]
+  disableXML = true
+  minifyOutput = true
+
+[params]
+  env = "production"
+  title = "SAP Dev Weekly"
+  description = "An AI-curated weekly blog for fullstack SAP developers – UI5, RAP, BTP, ABAP & Fiori."
+  keywords = ["SAP", "SAPUI5", "ABAP", "RAP", "BTP", "Fiori", "CAP"]
+  author = "SAP Dev Weekly Bot"
+  DateFormat = "January 2, 2006"
+  defaultTheme = "auto"
+  disableThemeToggle = false
+  ShowReadingTime = true
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  ShowToc = true
+  TocOpen = false
+  comments = false
+
+  [params.homeInfoParams]
+    Title = "SAP Dev Weekly 👋"
+    Content = "Your AI-curated recap of the SAP developer ecosystem. Every Monday: the best from the SAP Community, ABAP open source and the UI5 ecosystem — tailored for fullstack SAP devs."
+
+  [params.assets]
+    disableHLJS = false
+    favicon = "favicon.ico"
+
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/your-username/sap-ai-news"
+  [[params.socialIcons]]
+    name = "rss"
+    url = "index.xml"
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[menu]
+  [[menu.main]]
+    identifier = "posts"
+    name = "Posts"
+    url = "/posts/"
+    weight = 10
+  [[menu.main]]
+    identifier = "tags"
+    name = "Tags"
+    url = "/tags/"
+    weight = 20
+  [[menu.main]]
+    identifier = "archive"
+    name = "Archive"
+    url = "/archives/"
+    weight = 30
+  [[menu.main]]
+    identifier = "search"
+    name = "Search"
+    url = "/search/"
+    weight = 40
+
+[markup]
+  [markup.highlight]
+    noClasses = false
+    codeFences = true
+    guessSyntax = true
+    lineNos = false
+    style = "monokai"
