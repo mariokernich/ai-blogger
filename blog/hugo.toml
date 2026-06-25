@@ -46,7 +46,7 @@ pygmentsUseClasses = true
 
   [[params.socialIcons]]
     name = "github"
-    url = "https://github.com/your-username/sap-ai-news"
+    url = "https://github.com/mariokernich/ai-blogger"
   [[params.socialIcons]]
     name = "rss"
     url = "index.xml"
