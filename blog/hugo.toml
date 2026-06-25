@@ -1,4 +1,4 @@
-baseURL = "https://your-username.github.io/sap-ai-news/"
+baseURL = "https://mariokernich.github.io/ai-blogger/"
 languageCode = "en-us"
 title = "SAP Dev Weekly"
 theme = "PaperMod"
