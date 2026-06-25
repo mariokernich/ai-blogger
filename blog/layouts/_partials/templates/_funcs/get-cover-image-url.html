@@ -1,0 +1,28 @@
+{{- /* Resolve .Params.cover.image to an absolute URL. Mirrors cover.html logic. */ -}}
+{{- $image := .Params.cover.image -}}
+{{- $result := "" -}}
+{{- if $image -}}
+  {{- $url := urls.Parse $image -}}
+  {{- if ne $url.Scheme "" -}}
+    {{- $result = $image -}}
+  {{- else if hasPrefix $image "/" -}}
+    {{- $result = ($image | absURL) -}}
+  {{- else -}}
+    {{- $pageBundleCover := (.Resources.ByType "image").GetMatch (printf "*%s*" $image) -}}
+    {{- if $pageBundleCover -}}
+      {{- $result = $pageBundleCover.Permalink -}}
+    {{- else -}}
+      {{- $globalResourcesCover := (resources.ByType "image").GetMatch (printf "*%s*" $image) -}}
+      {{- if $globalResourcesCover -}}
+        {{- $result = $globalResourcesCover.Permalink -}}
+      {{- else -}}
+        {{- with .Resources.GetMatch (printf "*%s*" $image) -}}
+          {{- $result = .Permalink -}}
+        {{- else -}}
+          {{- $result = ((path.Join $.RelPermalink $image) | absURL) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

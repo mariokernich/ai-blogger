@@ -19,7 +19,7 @@ cover:
   image: "thumbnail.png"
   alt: "Fiori shell with ABAP Cloud automation"
   caption: "SAP Dev Weekly – Week 25/2026: Fiori Composition, ABAP Jobs & SAP AI"
-  relative: true
+  hiddenInSingle: false
 ShowToc: true
 TocOpen: false
 ---

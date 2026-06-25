@@ -1,0 +1,110 @@
+/* Post meta — horizontal row with avatar, dates, and stats */
+.post-meta,
+.entry-footer {
+    line-height: 1.4;
+}
+
+.entry-footer--list {
+    margin: 0.25rem 0 0.5rem;
+}
+
+.post-meta-items {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.post-meta-item {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.post-meta-item + .post-meta-item::before {
+    content: "·";
+    margin: 0 0.5rem;
+    color: var(--secondary);
+    opacity: 0.65;
+    line-height: 1;
+}
+
+.post-author-meta {
+    gap: 0.45rem;
+}
+
+.post-author-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+
+.post-author-name {
+    line-height: 1.2;
+    color: inherit;
+    text-decoration: none;
+}
+
+.post-author-name:hover {
+    text-decoration: underline;
+}
+
+.related-posts {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.related-posts h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+}
+
+.related-posts ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.related-posts li + li {
+    margin-top: 0.35rem;
+}
+
+.related-posts a {
+    text-decoration: underline;
+}
+
+.post-meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.3;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    letter-spacing: 0.01em;
+}
+
+.post-meta-badge__icon {
+    width: 0.9em;
+    height: 0.9em;
+    flex-shrink: 0;
+    display: block;
+}
+
+.post-meta-badge--human {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+:root[data-theme="dark"] .post-meta-badge--human {
+    background-color: #14532d;
+    color: #bbf7d0;
+}

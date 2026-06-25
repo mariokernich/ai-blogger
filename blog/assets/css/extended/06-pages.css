@@ -1,0 +1,62 @@
+/* About page – Mario portrait */
+.mario-portrait img {
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto 24px;
+    display: block;
+}
+
+:root[data-theme="dark"] .mario-portrait img {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Projects page – vertically stacked cards (shortcode-based) */
+.project-container {
+    display: flex;
+    flex-direction: column;
+    margin: 48px 0;
+}
+
+.project-container + .project-container {
+    border-top: 1px solid var(--border);
+    padding-top: 48px;
+}
+
+.project-container .project-image {
+    width: 100%;
+}
+
+.project-container .project-image img {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.project-container .project-text {
+    width: 100%;
+}
+
+.project-container .project-action {
+    margin-top: 8px;
+}
+
+:root[data-theme="dark"] .project-container .project-image img {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Talks page */
+.post-content.talks-page img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Inline SVG icons in main menu (e.g. Search) */
+#menu a span svg {
+    display: inline-block;
+    vertical-align: middle;
+}

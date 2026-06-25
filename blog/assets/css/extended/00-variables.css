@@ -1,0 +1,25 @@
+/* Custom variables for Hugo PaperMod blog */
+:root {
+    --code-bg: #ffffff;
+    --main-width: 52rem;
+    --radius: .625rem;
+}
+
+/* Light mode code background and syntax variables */
+:root:not([data-theme="dark"]), :root[data-theme="light"] {
+    --code-block-bg: #f6f8fa; /* Beautiful light code block background */
+    --code-bg: #eaecef;       /* Beautiful inline code background */
+}
+
+/* Visually hidden text for accessible / descriptive link names */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -1,0 +1,146 @@
+/* Table of Contents Pinning Styles */
+
+@media (min-width: 768px) {
+    /* Style summary container to align button */
+    details.toc summary {
+        display: flex !important;
+        align-items: center;
+        justify-content: space-between;
+        list-style: none !important;
+        padding: 0.6rem 1.2rem;
+        cursor: pointer;
+    }
+
+    details.toc summary::-webkit-details-marker,
+    details.toc summary::marker {
+        display: none !important;
+    }
+
+    /* Add custom toggle arrow on the left side of the title on desktop */
+    details.toc summary .title {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    details.toc summary .title::before {
+        content: "▶";
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 0.8rem;
+        transition: transform 0.2s ease-in-out;
+        transform: rotate(0deg);
+        color: var(--secondary);
+    }
+
+    details.toc[open] summary .title::before {
+        transform: rotate(90deg);
+    }
+
+    /* Transition layout shifts smoothly */
+    .post-single {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    details.toc {
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Pinned Pin Button Style */
+    .toc-pin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--code-bg);
+        color: var(--primary);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 3px 8px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        z-index: 10;
+        margin-left: auto;
+    }
+
+    /* Hover effect */
+    .toc-pin-btn:hover {
+        background: var(--border);
+        border-color: var(--secondary);
+    }
+
+    /* Active pinned state for the button */
+    details.toc.toc-pinned .toc-pin-btn {
+        background: var(--primary);
+        color: var(--theme);
+        border-color: var(--primary);
+    }
+    
+    details.toc.toc-pinned .toc-pin-btn:hover {
+        opacity: 0.9;
+    }
+
+    /* Rotate / change angle of the pin icon when pinned */
+    details.toc.toc-pinned .toc-pin-btn svg.pin-icon {
+        transform: rotate(45deg);
+        transition: transform 0.2s ease;
+    }
+
+    /* Dynamic pinning styles across screens */
+    details.toc.toc-pinned {
+        position: fixed !important;
+        top: 100px !important;
+        height: auto;
+        overflow-y: auto;
+        z-index: 99;
+        margin-bottom: 0 !important;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--code-bg) !important;
+    }
+
+    /* Light mode background specifically */
+    :root:not([data-theme="dark"]) details.toc.toc-pinned,
+    :root[data-theme="light"] details.toc.toc-pinned {
+        background: #fafafa !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Dark mode background specifically */
+    :root[data-theme="dark"] details.toc.toc-pinned,
+    body.dark details.toc.toc-pinned {
+        background: var(--entry) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Position TOC on extremely wide viewports */
+    @media (min-width: 1450px) {
+        details.toc.toc-pinned {
+            left: calc(50% - (var(--main-width) / 2) - 40px - 280px) !important;
+            width: 280px !important;
+            max-height: calc(100vh - 160px) !important;
+        }
+    }
+
+    /* Position TOC and slightly shift content on mid-size viewports to prevent overlapping */
+    @media (min-width: 768px) and (max-width: 1449px) {
+        body.has-pinned-toc .post-single {
+            transform: translateX(110px);
+        }
+
+        details.toc.toc-pinned {
+            left: calc(50% - (var(--main-width) / 2) - 15px - 220px + 110px) !important;
+            width: 220px !important;
+            max-height: calc(100vh - 160px) !important;
+        }
+    }
+}
+
+/* Hide Pin Button on mobile screen widths */
+@media (max-width: 767px) {
+    .toc-pin-btn {
+        display: none !important;
+    }
+}

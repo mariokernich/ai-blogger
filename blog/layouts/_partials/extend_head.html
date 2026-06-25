@@ -1,0 +1,142 @@
+{{- /* Preload the two most-used Poppins subsets to avoid FOUT for body text */
+-}}
+<link
+    rel="preload"
+    href="/fonts/poppins/poppins-400-latin.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+/>
+<link
+    rel="preload"
+    href="/fonts/poppins/poppins-600-latin.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+/>
+
+{{- /* Scroll progress indicator for the sticky header */ -}}
+<script src="/js/scroll-progress.js" defer></script>
+
+{{- /* Mobile burger menu toggle */ -}}
+<script src="/js/burger-menu.js" defer></script>
+
+{{- /* Table of Contents Desktop Pin toggle */ -}}
+<script src="/js/toc-toggle.js" defer></script>
+
+{{- if .Params.mermaid }}
+<script src="/js/mermaid.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Store original content of all mermaid blocks so we can re-render on theme change
+        const mermaidBlocks = [];
+        document.querySelectorAll("pre.mermaid").forEach((block, index) => {
+            const originalText = block.textContent;
+            block.setAttribute("data-original-text", originalText);
+            block.id = "mermaid-block-" + index;
+            mermaidBlocks.push({
+                id: block.id,
+                text: originalText,
+            });
+        });
+
+        function initMermaid() {
+            const html = document.querySelector("html");
+            const isDark =
+                html.dataset.theme === "dark" ||
+                (!html.dataset.theme &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+            mermaid.initialize({
+                startOnLoad: false, // We'll render manually
+                theme: isDark ? "dark" : "default",
+                securityLevel: "loose",
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true,
+                },
+            });
+
+            // Re-render blocks
+            mermaidBlocks.forEach((item) => {
+                const element = document.getElementById(item.id);
+                if (element) {
+                    // Restore original structure
+                    element.removeAttribute("data-processed");
+                    element.innerHTML = item.text;
+                }
+            });
+
+            mermaid.run({
+                nodes: document.querySelectorAll("pre.mermaid"),
+            });
+        }
+
+        // Initial run
+        initMermaid();
+
+        // Handle theme toggle dynamic updates
+        const themeToggle = document.getElementById("theme-toggle");
+        if (themeToggle) {
+            themeToggle.addEventListener("click", () => {
+                // Wait briefly for dataset.theme to be updated by the main toggle script
+                setTimeout(() => {
+                    initMermaid();
+                }, 50);
+            });
+        }
+    });
+</script>
+{{- end }} {{- if and .IsPage (gt (len (findRE `!\[|<figure` .RawContent)) 0) }}
+<script src="/js/fancybox.umd.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (typeof Fancybox !== "undefined") {
+            Fancybox.bind("[data-fancybox]", {
+                Input: {
+                    wheel: false,
+                },
+                Images: {
+                    Panzoom: {
+                        maxScale: 2,
+                    },
+                },
+            });
+        } else {
+            // Fallback check if script defer runs slightly later
+            const checkFancybox = setInterval(function () {
+                if (typeof Fancybox !== "undefined") {
+                    Fancybox.bind("[data-fancybox]", {
+                        Input: {
+                            wheel: false,
+                        },
+                        Images: {
+                            Panzoom: {
+                                maxScale: 2,
+                            },
+                        },
+                    });
+                    clearInterval(checkFancybox);
+                }
+            }, 50);
+            // Safety timeout
+            setTimeout(function () {
+                clearInterval(checkFancybox);
+            }, 2000);
+        }
+    });
+</script>
+{{- end }}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll("a").forEach(function (link) {
+            if (link.href && link.hostname !== window.location.hostname) {
+                if (/^https?:\/\//i.test(link.href)) {
+                    link.setAttribute("target", "_blank");
+                    link.setAttribute("rel", "noopener noreferrer");
+                }
+            }
+        });
+    });
+</script>

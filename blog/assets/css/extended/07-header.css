@@ -1,0 +1,117 @@
+/* Keep in-page anchors (TOC links) visible below the sticky header */
+html {
+    scroll-padding-top: calc(var(--header-height) + 5px + 1rem);
+}
+
+@media (max-width: 799px) {
+    html {
+        scroll-padding-top: calc(var(--header-height) + 5px + 30px + 1rem);
+    }
+}
+
+:root[data-theme="dark"] .header {
+    background: var(--theme);
+}
+
+@media (max-width: 799px) {
+    .header-nav {
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+}
+
+.logo a:hover img {
+    animation-name: shake-mk;
+    animation-duration: 2s;
+    transform-origin: 50% 50%;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes shake-mk {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(3deg); }
+    20% { transform: rotate(0deg); }
+    30% { transform: rotate(6deg); }
+    40% { transform: rotate(-3deg); }
+    50% { transform: rotate(0deg); }
+    60% { transform: rotate(3deg); }
+    70% { transform: rotate(0deg); }
+    80% { transform: rotate(6deg); }
+    90% { transform: rotate(-3deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.menu a {
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.menu .active {
+    font-size: 18px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+/* Theme toggle (sun/moon button) */
+.theme-toggle {
+    padding: 0 0.55rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.theme-toggle svg {
+    width: 22px;
+    height: 22px;
+}
+
+.header.menu-open .burger-toggle .burger-icon .burger-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+.header.menu-open .burger-toggle .burger-icon .burger-bar:nth-child(2) {
+    opacity: 0;
+}
+.header.menu-open .burger-toggle .burger-icon .burger-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 799px) {
+    .header-nav {
+        flex-wrap: wrap;
+        row-gap: 8px;
+    }
+    .logo {
+        flex: 1 1 auto;
+    }
+
+    .header.menu-open .menu {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        row-gap: 4px;
+        column-gap: 0;
+        overflow-x: visible;
+        white-space: normal;
+    }
+
+    .header.menu-open .menu li {
+        width: 100%;
+    }
+
+    .header.menu-open .menu a {
+        display: block;
+        width: 100%;
+        padding: 0;
+        line-height: normal;
+    }
+}
+
+@media (max-width: 429px) {
+    .logo a img,
+    .logo a svg {
+        height: 24px;
+        width: auto;
+    }
+}

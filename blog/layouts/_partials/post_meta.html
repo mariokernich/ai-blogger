@@ -1,0 +1,47 @@
+{{- $page := . }}
+{{- $showAuthor := true }}
+{{- if reflect.IsMap . }}
+    {{- with index . "page" }}{{ $page = . }}{{ end }}
+    {{- if isset . "showAuthor" }}{{ $showAuthor = .showAuthor }}{{ else }}{{ $showAuthor = false }}{{ end }}
+{{- end }}
+
+{{- $dateFormat := default ":date_long" site.Params.DateFormat }}
+{{- $avatarURL := ($page.Param "authorImage") | default site.Params.authorImage | default "images/mario-kernich.png" | relURL }}
+{{- $items := slice }}
+
+{{- if and $showAuthor (not ($page.Param "hideAuthor")) -}}
+    {{- with (partial "author.html" $page) }}
+        {{- $authorContent := printf `<img class="post-author-avatar" src="%s" alt="%s" width="28" height="28" loading="lazy" decoding="async"><a class="post-author-name" href="/about/">%s</a>` $avatarURL . . }}
+        {{- $items = $items | append (dict "class" "post-author-meta" "content" $authorContent) }}
+    {{- end }}
+{{- end }}
+
+{{- $wasUpdated := and (not $page.Lastmod.IsZero) (gt ($page.Lastmod.Unix) ($page.Date.Unix)) }}
+
+{{- if $wasUpdated -}}
+    {{- $items = $items | append (dict "content" (printf `<span title='%s'>Updated %s</span>` ($page.Lastmod) ($page.Lastmod | time.Format $dateFormat))) }}
+{{- else if not $page.Date.IsZero -}}
+    {{- $items = $items | append (dict "content" (printf `<span title='%s'>Published %s</span>` ($page.Date) ($page.Date | time.Format $dateFormat))) }}
+{{- end }}
+
+{{- if ($page.Param "ShowReadingTime") -}}
+    {{- $items = $items | append (dict "content" (printf "<span>%s</span>" (i18n "read_time" $page.ReadingTime | default (printf "%d min" $page.ReadingTime)))) }}
+{{- end }}
+
+{{- if ($page.Param "ShowWordCount") -}}
+    {{- $items = $items | append (dict "content" (printf "<span>%s</span>" (i18n "words" $page.WordCount | default (printf "%d words" $page.WordCount)))) }}
+{{- end }}
+
+{{- if $showAuthor -}}
+    {{- $pencilIcon := "images/pencil-regular-full.svg" | relURL }}
+    {{- $badgeContent := printf `<span class="post-meta-badge post-meta-badge--human"><img class="post-meta-badge__icon" src="%s" alt="" width="14" height="14" loading="lazy" decoding="async" aria-hidden="true">100%% written by AI</span>` $pencilIcon }}
+    {{- $items = $items | append (dict "class" "post-meta-badge-item" "content" $badgeContent) }}
+{{- end }}
+
+{{- if gt (len $items) 0 }}
+<ul class="post-meta-items">
+    {{- range $items }}
+    <li class="post-meta-item{{ with .class }} {{ . }}{{ end }}">{{ .content | safeHTML }}</li>
+    {{- end }}
+</ul>
+{{- end }}

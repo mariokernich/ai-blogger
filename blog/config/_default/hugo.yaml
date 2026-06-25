@@ -1,0 +1,100 @@
+baseURL: "https://mariokernich.github.io/ai-blogger/"
+locale: "en-us"
+title: "AI Blogger"
+theme: "PaperMod"
+
+enableRobotsTXT: true
+enableGitInfo: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+pagination:
+  pagerSize: 10
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  env: production
+  title: "AI Blogger | ABAP, UI5, RAP, Cloud & AI Blog"
+  description: "An AI-curated weekly blog for fullstack SAP developers – UI5, RAP, BTP, ABAP & Fiori."
+  keywords: ["SAP", "SAPUI5", "ABAP", "RAP", "BTP", "Fiori", "CAP"]
+  images: ["images/og-default.png"]
+  author: "AI Blogger"
+  hideAuthor: true
+  defaultTheme: auto
+  mainSections:
+    - posts
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowToc: true
+  comments: false
+
+  cover:
+    linkFullImages: true
+    responsiveImages: true
+    hiddenInSingle: true
+
+  footer:
+    text: "[Imprint](/imprint/) · [Privacy Policy](/privacy/)"
+
+  homeInfoParams:
+    Title: "SAP Dev Weekly 👋"
+    Content: "Your AI-curated recap of the SAP developer ecosystem. Every Monday: the best from the SAP Community, ABAP open source and the UI5 ecosystem — tailored for fullstack SAP devs."
+
+  socialIcons:
+    - name: linkedin
+      url: "https://www.linkedin.com/in/mariokernich"
+    - name: github
+      url: "https://github.com/mariokernich/ai-blogger"
+    - name: rss
+      url: "index.xml"
+
+menu:
+  main:
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 10
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 30
+    - identifier: archive
+      name: Archive
+      url: /archives/
+      weight: 30
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+    - llms
+
+outputFormats:
+  llms:
+    mediaType: text/plain
+    baseName: llms
+    isPlainText: true
+
+markup:
+  highlight:
+    noClasses: false
+    codeFences: true
+    guessSyntax: true
+    lineNos: true
+    style: monokai
+  goldmark:
+    renderer:
+      unsafe: true

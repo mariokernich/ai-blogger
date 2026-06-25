@@ -1,0 +1,29 @@
+{{- if hugo.IsProduction | or (eq site.Params.env "production") }}
+{{- $gaId := site.Params.analytics.google.id | default "G-HSQX674Z6S" }}
+<div
+    id="consent-banner"
+    class="consent-banner"
+    role="dialog"
+    aria-labelledby="consent-title"
+    aria-describedby="consent-desc"
+    aria-live="polite"
+    hidden
+>
+    <div class="consent-banner__inner">
+        <p id="consent-title" class="consent-banner__title">Analytics cookies</p>
+        <p id="consent-desc" class="consent-banner__text">
+            This site may use Google Analytics to understand how content is used. Tracking starts only after you opt in. No analytics data is collected if you decline.
+            <a href="/privacy/">Privacy Policy</a>
+        </p>
+        <div class="consent-banner__actions">
+            <button type="button" id="consent-decline" class="btn btn-small">
+                <span class="btn-inner">Decline</span>
+            </button>
+            <button type="button" id="consent-accept" class="btn btn-small btn-accept">
+                <span class="btn-inner">Accept</span>
+            </button>
+        </div>
+    </div>
+</div>
+<script src="/js/analytics-consent.js" defer data-ga-id="{{ $gaId }}"></script>
+{{- end }}

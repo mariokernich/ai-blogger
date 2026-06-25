@@ -1,0 +1,54 @@
+/* Feed, post cards, images, and logo */
+.list {
+    background: var(--theme);
+}
+
+.post-entry {
+    border: none !important;
+    padding: 0 !important;
+    margin-bottom: 60px !important;
+}
+
+.post-entry:hover,
+.post-entry:focus-within {
+    border-color: transparent;
+}
+
+.logo a img,
+.logo a svg {
+    border-radius: 0;
+}
+
+.md-content img {
+    box-shadow: 0 10px 15px -3px #0000001a, 0 4px 6px -2px #0000000d;
+}
+
+.entry-cover img {
+    border-radius: var(--radius);
+}
+
+:root[data-theme="dark"] .logo a img {
+    content: url("/images/kernich-logo-white.svg");
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .logo a img {
+        content: url("/images/kernich-logo-white.svg");
+    }
+}
+
+:root[data-theme="dark"] .post-entry {
+    background: transparent;
+}
+
+@media (max-width: 860px) {
+    .main {
+        padding-top: 0;
+    }
+}
+
+.toc a {
+    padding-top: 4px;
+    padding-bottom: 4px;
+    display: block;
+}

@@ -1,0 +1,24 @@
+{{- if and .IsPage (eq .Section "posts") }}
+{{- $related := slice }}
+{{- $currentTags := .Params.tags | default slice }}
+{{- range $tag := $currentTags }}
+  {{- range site.RegularPages }}
+    {{- if and (eq .Section "posts") (ne .Permalink $.Permalink) }}
+      {{- if in .Params.tags $tag }}
+        {{- $related = $related | append . }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $related = $related | uniq | first 3 }}
+{{- if gt (len $related) 0 }}
+<section class="related-posts" aria-label="Related posts">
+  <h2>Related posts</h2>
+  <ul>
+    {{- range $related }}
+    <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}
+{{- end }}

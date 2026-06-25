@@ -1,0 +1,59 @@
+{{- $coverImage := partial "templates/_funcs/get-cover-image-url" . -}}
+{{- if not $coverImage }}
+  {{- if .IsHome }}
+    {{- with site.Params.images }}
+      {{- with index . 0 }}
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="{{ . | absURL }}">
+      {{- end }}
+    {{- else }}
+      <meta name="twitter:card" content="summary">
+    {{- end }}
+  {{- else }}
+    {{- $images := partial "templates/_funcs/get-page-images" . }}
+    {{- with index $images 0 }}
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:image" content="{{ .Permalink }}">
+    {{- else }}
+      <meta name="twitter:card" content="summary">
+    {{- end }}
+  {{- end }}
+{{- else }}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ $coverImage }}">
+{{- end }}
+
+{{- $twitterTitle := cond .IsHome (site.Params.title | default site.Title) (.Params.seoTitle | default .Title) -}}
+{{- with $twitterTitle }}
+  <meta name="twitter:title" content="{{ . | plainify }}">
+{{- end }}
+
+{{- $twitterDesc := "" -}}
+{{- if .Description -}}
+  {{- $twitterDesc = .Description | plainify -}}
+{{- else if .IsSection -}}
+  {{- with .GetPage "_index" -}}
+    {{- with .Description -}}
+      {{- $twitterDesc = . | plainify -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $twitterDesc -}}
+  {{- $twitterDesc = (or .Summary site.Params.description) | plainify -}}
+{{- end -}}
+{{- with $twitterDesc }}
+  <meta name="twitter:description" content="{{ trim . "\n\r\t " }}">
+{{- end }}
+
+{{- $twitterSite := "" }}
+{{- with site.Params.social }}
+  {{- if reflect.IsMap . }}
+    {{- with .twitter }}
+      {{- $content := . }}
+      {{- if not (strings.HasPrefix . "@") }}
+        {{- $content = printf "@%v" . }}
+      {{- end }}
+      <meta name="twitter:site" content="{{ $content }}">
+    {{- end }}
+  {{- end }}
+{{- end }}

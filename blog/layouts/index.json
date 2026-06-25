@@ -1,0 +1,30 @@
+{{- $pages := where site.RegularPages "Section" "posts" -}}
+{{- $list := slice -}}
+{{- range $pages -}}
+  {{- $img := "" -}}
+  {{- with .Params.image -}}
+    {{- $img = . | absURL -}}
+  {{- else -}}
+    {{- with .Resources.GetMatch "{cover,featured,thumbnail}.*" -}}
+      {{- $img = .Permalink -}}
+    {{- else -}}
+      {{- with .Resources.ByType "image" -}}
+        {{- with index . 0 -}}{{- $img = .Permalink -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $item := dict
+      "title"        .Title
+      "permalink"    .Permalink
+      "summary"      .Summary
+      "content"      .Content
+      "date"         (.Date.Format "2006-01-02T15:04:05Z07:00")
+      "image"        $img
+      "tags"         (.Params.tags | default slice)
+      "reading_time" .ReadingTime
+      "word_count"   .WordCount
+  -}}
+  {{- $list = $list | append $item -}}
+{{- end -}}
+{{- $list | jsonify -}}

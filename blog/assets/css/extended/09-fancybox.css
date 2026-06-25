@@ -1,0 +1,19 @@
+/* Fancybox image lightbox in post content */
+.post-content a.fancybox-link {
+    cursor: zoom-in;
+    display: block;
+    margin: 1.5rem auto;
+    text-align: center;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.post-content a.fancybox-link img {
+    margin: 0 auto;
+    display: inline-block;
+    transition: transform 0.2s ease-in-out;
+}
+
+.post-content a.fancybox-link:hover img {
+    transform: scale(1.015);
+}
