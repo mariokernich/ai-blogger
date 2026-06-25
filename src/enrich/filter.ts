@@ -10,23 +10,24 @@ import type { RawItem } from "../types.js";
  * finance, basis, ...) so we require at least one audience keyword.
  */
 export function isRelevant(item: RawItem): boolean {
-    if (
-        item.source === "dotabap" ||
-        item.source === "bestofui5" ||
-        item.source === "bestofcap" ||
-        item.source === "marian-zeis" ||
-        item.source === "its-full-of-stars"
-    )
-        return true;
+  if (
+    item.source === "dotabap" ||
+    item.source === "bestofui5" ||
+    item.source === "bestofcap" ||
+    item.source === "marian-zeis" ||
+    item.source === "its-full-of-stars" ||
+    item.source === "ui5-changelog"
+  )
+    return true;
 
-    const haystack = [item.title, item.summary]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+  const haystack = [item.title, item.summary]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
 
-    return config.audienceTopics.some((kw) => haystack.includes(kw));
+  return config.audienceTopics.some((kw) => haystack.includes(kw));
 }
 
 export function filterRelevant(items: RawItem[]): RawItem[] {
-    return items.filter(isRelevant);
+  return items.filter(isRelevant);
 }
